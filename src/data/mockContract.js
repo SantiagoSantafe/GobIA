@@ -494,6 +494,10 @@ export const MOCK_CONTRACT = {
     presencia_estatal: "Limitada",
     conflicto_activo: true,
     grupos_armados: ["Disidencias FARC — Frente 6", "ELN"],
+    alertas_tempranas_defensoria: [
+      "Alerta Temprana AT 026-2025 — Defensoría del Pueblo: riesgo alto de confinamiento en zona rural",
+      "Alerta Temprana AT 014-2024 — Defensoría del Pueblo: presencia activa grupos armados zona escolar",
+    ],
     inversion_contrato_per_capita: Math.round(4820000000 / 26800),
     carto_map_url: null, // set via VITE_CARTO_URL in .env — read in MapView.jsx
   },
@@ -809,6 +813,10 @@ export const DUE_DILIGENCE = {
     },
     conflicto_activo: true,
     grupos_armados: ["Disidencias FARC — Frente 6", "ELN — Frente Occidental"],
+    alertas_tempranas_defensoria: [
+      "Alerta Temprana AT 026-2025 — Defensoría del Pueblo: riesgo alto de confinamiento en zona rural",
+      "Alerta Temprana AT 014-2024 — Defensoría del Pueblo: presencia activa grupos armados zona escolar",
+    ],
     indice_riesgo_electoral: "ALTO (MOE 2026)",
   },
   historial_secop: {

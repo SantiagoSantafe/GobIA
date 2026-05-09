@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Shield, Search, ChevronDown, ArrowLeft,
-  AlertTriangle, TrendingUp, Building2, MapPin, X,
+  AlertTriangle, TrendingUp, Building2, MapPin, X, Zap,
 } from "lucide-react";
 import MOCK_CONTRACT, {
   MOCK_ALERTS, BANDERAS_OCDS, PACO_NOTICIAS, DUE_DILIGENCE,
@@ -364,6 +364,58 @@ export default function Dashboard() {
           </span>
         </div>
       </div>
+
+      {/* ── FEATURED RISK SCORE — lo primero que ve el usuario ───────────── */}
+      {!selectedAlert && (
+        <div className="bg-white border-b border-vigia-border px-4 sm:px-6 py-4">
+          <div className="max-w-[1600px] mx-auto">
+            <div
+              className="rounded-2xl border-2 border-red-200 bg-red-50 px-5 py-4 flex items-center gap-5 cursor-pointer hover:border-red-300 hover:shadow-card transition-all"
+              onClick={() => setSelectedAlert(MOCK_ALERTS[0])}
+            >
+              {/* Score gauge mini */}
+              <div className="relative shrink-0 w-16 h-16">
+                <svg width="64" height="64" className="rotate-[-90deg]">
+                  <circle cx="32" cy="32" r="26" fill="none" stroke="#fecaca" strokeWidth="8" />
+                  <circle
+                    cx="32" cy="32" r="26" fill="none"
+                    stroke="#dc2626" strokeWidth="8" strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 26}`}
+                    strokeDashoffset={`${2 * Math.PI * 26 * (1 - 0.92)}`}
+                    style={{ filter: "drop-shadow(0 0 6px rgba(239,68,68,0.5))" }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-display font-bold text-lg leading-none text-risk-critical">92</span>
+                  <span className="font-mono text-[8px] text-slate-400">/100</span>
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="text-[9px] font-mono font-bold bg-risk-critical text-white rounded-full px-2.5 py-0.5 animate-pulse-dot">
+                    RIESGO CRÍTICO
+                  </span>
+                  <span className="text-[9px] font-mono text-slate-400">Contrato más reciente · PAE PDET</span>
+                </div>
+                <p className="text-sm font-display font-semibold text-slate-900 leading-snug truncate">
+                  Alcaldía de Argelia → Soluciones Nutricionales del Pacífico SAS
+                </p>
+                <p className="text-[10px] font-mono text-slate-500 mt-0.5">
+                  $4.820M COP · Cauca · 7 banderas · empresa constituida hace 15 días
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="shrink-0 hidden sm:flex items-center gap-2 text-[11px] font-mono text-risk-critical font-semibold">
+                <Zap size={12} />
+                ver análisis completo →
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── MAIN LAYOUT ────────────────────────────────────────────────────── */}
       <div className={`max-w-[1600px] mx-auto px-4 sm:px-6 py-6 ${selectedAlert ? "grid grid-cols-1 lg:grid-cols-[1fr_520px] gap-6" : ""}`}>

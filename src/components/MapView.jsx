@@ -118,16 +118,25 @@ export function MapView({ territorio }) {
           )}
         </div>
 
-        {/* Conflict alert */}
+        {/* Conflict + Alertas Tempranas Defensoría */}
         {territorio.conflicto_activo && (
           <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
             <AlertTriangle size={13} className="text-amber-600 mt-0.5 shrink-0" />
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-xs font-mono font-semibold text-amber-700">ZONA DE CONFLICTO ACTIVO</p>
               <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
                 Presencia de {territorio.grupos_armados.join(" · ")}. La ejecución real
                 del contrato PAE en esta zona es de muy difícil verificación.
               </p>
+              {territorio.alertas_tempranas_defensoria?.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-amber-200 space-y-1">
+                  {territorio.alertas_tempranas_defensoria.map((a, i) => (
+                    <p key={i} className="text-[10px] font-mono text-amber-700 leading-relaxed">
+                      ⚠ {a}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
