@@ -7,6 +7,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Shield, ArrowRight, ExternalLink, ChevronRight } from "lucide-react";
+import { HeroParticleField } from "../components/HeroParticleField.jsx";
 
 // ── Animated counter ──────────────────────────────────────────────────────────
 function AnimatedCounter({ target, suffix = "", decimals = 0, duration = 1600 }) {
@@ -175,29 +176,36 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-vigia-border">
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-28">
-          <Label>Colombia 5.0 Hackathon · Reto GobIA Auditor</Label>
-          <h1 className="text-[clamp(2.6rem,6vw,4.5rem)] font-light leading-[1.06] tracking-tight text-vigia-heading mb-7 max-w-3xl">
-            memoria institucional<br />
-            para la contratación<br />
-            <span className="font-semibold text-vigia-accent">pública colombiana.</span>
-          </h1>
-          <p className="text-vigia-muted text-lg leading-relaxed max-w-lg mb-10 font-light">
-            detección automática de opacidad con datos 100% públicos.<br />
-            agente de ia. señales probabilísticas. nunca acusaciones.
-          </p>
-          <div className="flex items-center gap-4 flex-wrap">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-vigia-heading text-white text-sm font-medium hover:bg-vigia-body transition-colors duration-200"
-            >
-              abrir dashboard <ArrowRight size={14} />
-            </Link>
-            <a href="#metodologia"
-              className="flex items-center gap-1.5 text-sm text-vigia-muted hover:text-vigia-heading transition-colors duration-200 font-light">
-              metodología <ExternalLink size={12} />
-            </a>
+      <section className="relative overflow-hidden bg-white border-b border-vigia-border">
+        <HeroParticleField className="opacity-90" />
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(232,96,28,0.11),transparent_28%),radial-gradient(circle_at_82%_20%,rgba(96,165,250,0.16),transparent_34%),radial-gradient(circle_at_72%_62%,rgba(96,165,250,0.08),transparent_26%),radial-gradient(circle_at_32%_70%,rgba(232,96,28,0.07),transparent_24%),radial-gradient(circle_at_56%_52%,rgba(255,255,255,0.16),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.3)_40%,rgba(255,255,255,0.8)_100%)]" />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 min-h-[72vh] flex items-center">
+          <div className="max-w-3xl">
+            <Label>Colombia 5.0 Hackathon · Reto GobIA Auditor</Label>
+            <h1 className="text-[clamp(2.6rem,6vw,4.5rem)] font-light leading-[1.06] tracking-tight text-vigia-heading mb-7 max-w-3xl">
+              memoria institucional<br />
+              para la contratación<br />
+              <span className="font-semibold text-vigia-accent">pública colombiana.</span>
+            </h1>
+            <p className="text-vigia-muted text-lg leading-relaxed max-w-lg mb-10 font-light">
+              detección automática de opacidad con datos 100% públicos.<br />
+              agente de ia. señales probabilísticas. nunca acusaciones.
+            </p>
+            <div className="flex items-center gap-4 flex-wrap">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-vigia-heading text-white text-sm font-medium hover:bg-vigia-body transition-colors duration-200"
+              >
+                abrir dashboard <ArrowRight size={14} />
+              </Link>
+              <a href="#metodologia"
+                className="flex items-center gap-1.5 text-sm text-vigia-muted hover:text-vigia-heading transition-colors duration-200 font-light">
+                metodología <ExternalLink size={12} />
+              </a>
+            </div>
           </div>
         </div>
       </section>
