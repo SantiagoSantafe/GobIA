@@ -2,7 +2,7 @@
 // VIGÍA — Dashboard Page
 // Feed de alertas estilo anticorrupcion.co + panel de detalle con componentes existentes
 // =============================================================================
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Shield, Search, ChevronDown, ArrowLeft,
@@ -11,6 +11,7 @@ import {
 import MOCK_CONTRACT, {
   MOCK_ALERTS, BANDERAS_OCDS, PACO_NOTICIAS, DUE_DILIGENCE,
 } from "../data/mockContract";
+import { fetchAlerts } from "../lib/api";
 import { TabNav } from "../components/TabNav";
 import { RiskScorePanel } from "../components/RiskScorePanel";
 import { MapView } from "../components/MapView";
@@ -260,15 +261,30 @@ export default function Dashboard() {
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [filterNivel, setFilterNivel] = useState("TODOS");
   const [filterDepto, setFilterDepto] = useState("TODOS");
+  const [alerts, setAlerts] = useState(MOCK_ALERTS);
+  const [alertsLoading, setAlertsLoading] = useState(true);
+
+  // Carga el feed real de alertas al montar
+  useEffect(() => {
+    (async () => {
+      try {
+        const real = await fetchAlerts({ limit: 50 });
+        if (real?.length) setAlerts(real);
+      } catch (e) {
+        console.warn("[VIGÍA] Dashboard fetchAlerts fallback:", e.message);
+      } finally {
+        setAlertsLoading(false);
+      }
+    })();
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // TODO: Fetch from FastAPI: GET /search/contracts?q=:query
-    console.info("[VIGÍA] Search:", query, "— TODO: connect to FastAPI");
+    // La búsqueda filtra localmente el feed cargado
   };
 
   // Filter alerts
-  const filtered = MOCK_ALERTS.filter((a) => {
+  const filtered = alerts.filter((a) => {
     const matchNivel = filterNivel === "TODOS" || a.nivel === filterNivel;
     const matchDepto = filterDepto === "TODOS" || a.departamento === filterDepto;
     const matchQuery = !query || [a.entidad, a.proveedor, a.id, a.departamento]
@@ -277,13 +293,13 @@ export default function Dashboard() {
   });
 
   // Aggregate metrics
-  const totalValor = MOCK_ALERTS.reduce((s, a) => s + a.valor, 0);
-  const topEntidad = MOCK_ALERTS.reduce((top, a) => {
-    const cnt = MOCK_ALERTS.filter((x) => x.entidad === a.entidad).length;
+  const totalValor = alerts.reduce((s, a) => s + a.valor, 0);
+  const topEntidad = alerts.reduce((top, a) => {
+    const cnt = alerts.filter((x) => x.entidad === a.entidad).length;
     return cnt > (top.cnt ?? 0) ? { entidad: a.entidad, cnt } : top;
   }, {}).entidad ?? "—";
 
-  const deptos = ["TODOS", ...new Set(MOCK_ALERTS.map((a) => a.departamento))];
+  const deptos = ["TODOS", ...new Set(alerts.map((a) => a.departamento).filter(Boolean))];
 
   return (
     <div className="min-h-screen bg-surface-1 font-display">
