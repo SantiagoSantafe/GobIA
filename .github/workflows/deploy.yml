@@ -1,0 +1,59 @@
+name: Build & Deploy VIGÍA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # permite ejecutar manualmente desde GitHub
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout código ─────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Instalar Node.js ────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── 3. Instalar dependencias ───────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Build de producción ─────────────────────────────────
+      - name: Build
+        run: npm run build
+        env:
+          # Agrega aquí tus variables de entorno de producción
+          # VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          # VITE_CARTO_URL: ${{ secrets.VITE_CARTO_URL }}
+          NODE_ENV: production
+
+      # ── 5. Configurar SSH ──────────────────────────────────────
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
+
+      # ── 6. Copiar dist/ a la VM ────────────────────────────────
+      - name: Deploy to GCP VM
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            dist/ \
+            ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }}:/var/www/vigia/
+
+      # ── 7. Recargar nginx ──────────────────────────────────────
+      - name: Reload nginx
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} \
+            "sudo systemctl reload nginx"
