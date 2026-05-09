@@ -55,7 +55,7 @@ SODA_BASE_URL: str = os.getenv(
 SODA_APP_TOKEN: str | None = os.getenv("SODA_APP_TOKEN")   # opcional, sube rate-limit
 SODA_TIMEOUT: float = float(os.getenv("SODA_TIMEOUT", "15"))
 DEFAULT_LIMIT: int = int(os.getenv("SODA_DEFAULT_LIMIT", "500"))
-USER_AGENT: str = "VIGIA/1.0 (gobia.santiagosantafe.me; veeduría ciudadana)"
+USER_AGENT: str = "VIGIA/1.0 (gobia.santiagosantafe.me; veeeduria-ciudadana)"
 
 # ─── Singleton de cliente httpx reutilizable ──────────────────────────────────
 
