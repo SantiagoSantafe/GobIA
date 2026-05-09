@@ -827,6 +827,22 @@ export const DUE_DILIGENCE = {
     "UNODC SIMCI 2025 — Monitoreo cultivos ilícitos",
   ],
   fecha_consulta: "09/05/2026 10:47",
+  // ── OSINT geoespacial ──────────────────────────────────────────────
+  osint: {
+    direccion_registrada: "Cra. 15 # 88-64 Of. 301, Bogotá D.C.",
+    coordenadas: { lat: 4.6745, lng: -74.0541 },
+    tipo_inmueble_catastro: "Local comercial — predio sin uso registrado",
+    ultima_inspeccion: "No registra visita en últimos 5 años",
+    discrepancia_score: 0.91,
+    hallazgos: [
+      "Inmueble figura como local comercial pero parece bodega abandonada",
+      "Sin avisos comerciales visibles desde calle",
+      "Sin actividad económica registrada en visita virtual",
+      "Código catastral: inmueble compartido con 4 empresas distintas",
+    ],
+    actividad_vecinal: "Zona residencial / Sin actividad comercial visible",
+    historial_predial: "Sin licencias de construcción activas en últimos 10 años",
+  },
 };
 
 // =============================================================================

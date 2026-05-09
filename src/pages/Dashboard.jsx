@@ -19,6 +19,7 @@ import { EvidenceCharts } from "../components/EvidenceCharts";
 import { LLMActionPanel } from "../components/LLMActionPanel";
 import { PACONewsWidget } from "../components/PACONewsWidget";
 import { DueDiligencePanel } from "../components/DueDiligencePanel";
+import { OSINTVerification } from "../components/OSINTVerification";
 
 // Alert counts per tab
 const TAB_ALERT_COUNTS = { resumen: 10, redes: 5, territorio: 3, denuncia: 5 };
@@ -214,6 +215,8 @@ function DetailPanel({ alert, onClose }) {
 
         {activeTab === "denuncia" && (
           <div className="space-y-4 animate-fade-in">
+            {/* TODO: Fetch from FastAPI: GET /osint/verify-address?nit=... */}
+            <OSINTVerification ddq={DUE_DILIGENCE} />
             {/* TODO: Fetch from FastAPI: GET /due-diligence/:nit */}
             <DueDiligencePanel ddq={DUE_DILIGENCE} contractId={alert.id} />
             {/* TODO: Fetch from FastAPI: POST /llm/draft-complaint */}
