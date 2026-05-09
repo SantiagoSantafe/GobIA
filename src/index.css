@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #F8FAFC;
+    color: #0F172A;
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  * { box-sizing: border-box; }
+
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: #F1F5F9; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+}
+
+@layer components {
+  /* Base card — white bg, subtle shadow */
+  .card {
+    @apply bg-white border border-surface-3 rounded-2xl shadow-card;
+  }
+
+  .card-header {
+    @apply px-5 py-4 border-b border-surface-3 flex items-center gap-2;
+  }
+
+  /* Glassmorphism card — for hero and overlay areas */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.07), 0 1px 4px rgba(15, 23, 42, 0.04);
+    border-radius: 1rem;
+  }
+
+  /* Monospace label utility */
+  .label-mono {
+    @apply font-mono text-xs tracking-wider uppercase text-surface-4;
+  }
+
+  /* Risk severity badges — semi-transparent on white */
+  .risk-badge-critical {
+    @apply bg-red-50 text-red-600 border border-red-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+  }
+  .risk-badge-high {
+    @apply bg-amber-50 text-amber-600 border border-amber-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+  }
+  .risk-badge-medium {
+    @apply bg-yellow-50 text-yellow-600 border border-yellow-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+  }
+  .risk-badge-info {
+    @apply bg-cyan-50 text-cyan-600 border border-cyan-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+  }
+  .risk-badge-ocds {
+    @apply bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+  }
+
+  /* Shimmer skeleton */
+  .shimmer-bg {
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes typing-cursor {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.typing-cursor::after {
+  content: "▌";
+  animation: typing-cursor 0.8s infinite;
+  color: #6366F1;
+  margin-left: 1px;
+}
