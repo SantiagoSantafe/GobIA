@@ -45,23 +45,31 @@ export const MOCK_CONTRACT = {
   nivel_riesgo: "CRÍTICO",
   num_banderas: 7,
 
-  // --- Banderas SARLAFT / Anticorrupción ---
-  // Metodología: https://www.anticorrupcion.co/metodologia
+  // --- 7 Banderas VIGÍA ---
+  // Metodología: Fazekas & Kocsis (2020) + OCP Red Flags (2024)
   // Puntaje = 100 × (1 − ∏(1 − wᵢ × cᵢ / 100))
   banderas: [
     {
+      id_bandera: "empresa_maleta",
+      nombre: "Empresa de maletín",
+      peso_pct: 30,
+      score_aportado: 30,
+      nivel: "CRÍTICO",
+      evidencia: "Empresa constituida 15 días antes del contrato (18-abr-2026). Capital: $500.000 COP. 3 empleados.",
+      norma: "Art. 84, Ley 1474/2011 — Estatuto Anticorrupción",
+      fuente: "RUES / qmzu-gj57",
+      // backward-compat fields for existing components
       id: "F06",
-      codigo: "SARLAFT-NE",
-      titulo: "SARLAFT Alerta: Empresa de Papel",
-      descripcion:
-        "Empresa constituida hace 15 días (18/04/2026) adjudicataria de contrato por $4.820M COP. Empresa fachada constituida específicamente para capturar este contrato. Capital suscrito: $500.000 COP.",
+      codigo: "EMPRESA-M",
+      titulo: "Empresa de Maletín",
+      descripcion: "Empresa constituida hace 15 días (18/04/2026) adjudicataria de contrato por $4.820M COP. Capital suscrito: $500.000 COP.",
       categoria: "manipulacion_adjudicacion",
       peso: 30,
       confianza: 100,
       severidad: "critical",
       icono: "building2",
-      legal_ref: "Ley 1474/2011 Art. 84 — Tipificación empresa fachada",
-      evidencia: [
+      legal_ref: "Art. 84, Ley 1474/2011 — Estatuto Anticorrupción",
+      evidencia_lista: [
         "Fecha constitución RUES: 18/04/2026",
         "Capital suscrito: $500.000 COP",
         "3 empleados declarados",
@@ -69,39 +77,51 @@ export const MOCK_CONTRACT = {
       ],
     },
     {
+      id_bandera: "pep_representante",
+      nombre: "Representante Legal PEP",
+      peso_pct: 30,
+      score_aportado: 28,
+      nivel: "CRÍTICO",
+      evidencia: "Hernán D. Mosquera Palacios — exfuncionario Secretaría Educación Cauca 2020-2023. Match parcial OFAC-SDN 78%.",
+      norma: "SARLAFT — Circular Básica Jurídica SFC",
+      fuente: "SIGEP II / OFAC SDN List",
       id: "F_PEP",
-      codigo: "SARLAFT-PEP",
-      titulo: "SARLAFT Alerta: Representante Legal en Lista PEP",
-      descripcion:
-        "Hernán Darío Mosquera Palacios (CC 79.847.123) aparece en lista de Personas Expuestas Políticamente — exfuncionario Secretaría de Educación Cauca 2020-2023. Coincidencia en listas restrictivas OFAC.",
+      codigo: "PEP-MATCH",
+      titulo: "Representante Legal en Lista PEP",
+      descripcion: "Hernán Darío Mosquera Palacios aparece en lista de Personas Expuestas Políticamente — exfuncionario Secretaría de Educación Cauca 2020-2023.",
       categoria: "manipulacion_adjudicacion",
       peso: 30,
       confianza: 95,
       severidad: "critical",
       icono: "user-x",
-      legal_ref:
-        "SARLAFT Circular Básica Jurídica SFC — Gestión de riesgo LA/FT",
-      evidencia: [
+      legal_ref: "SARLAFT Circular Básica Jurídica SFC — Gestión de riesgo LA/FT",
+      evidencia_lista: [
         "Match en lista PEP SIGEP",
         "Exfuncionario público Cauca 2020-2023",
         "Aparece en red de 3 empresas vinculadas",
-        "Match parcial OFAC lista SDN",
+        "Match parcial OFAC lista SDN 78%",
       ],
     },
     {
+      id_bandera: "pliego_sastre",
+      nombre: "Pliego Sastre (NLP)",
+      peso_pct: 25,
+      score_aportado: 22,
+      nivel: "CRÍTICO",
+      evidencia: "14 cláusulas técnicas restringen la competencia al perfil exacto del adjudicado. Similitud coseno: 0.94.",
+      norma: "Ley 80/1993 Art. 24 — Principio de Transparencia; Ley 1474/2011 Art. 5",
+      fuente: "SECOP II NLP / VIGÍA",
       id: "F_NLP",
       codigo: "NLP-PS",
-      titulo: "Pliego Sastre / Especificidad a Medida Detectada (Modelo NLP)",
-      descripcion:
-        "El modelo NLP de VIGÍA detectó 14 cláusulas técnicas en el pliego que restringen la competencia al perfil exacto del contratista adjudicado. Similitud coseno con contratos previos del mismo par entidad-contratista: 0.94.",
+      titulo: "Pliego Sastre Detectado (NLP)",
+      descripcion: "El modelo NLP de VIGÍA detectó 14 cláusulas que restringen la competencia al perfil exacto del contratista. Similitud coseno con contratos previos: 0.94.",
       categoria: "manipulacion_proceso",
       peso: 25,
       confianza: 88,
       severidad: "critical",
       icono: "file-text",
-      legal_ref:
-        "Ley 80/1993 Art. 24 — Principio de Transparencia; Ley 1474/2011 Art. 5",
-      evidencia: [
+      legal_ref: "Ley 80/1993 Art. 24 — Principio de Transparencia; Ley 1474/2011 Art. 5",
+      evidencia_lista: [
         "14 cláusulas restrictivas detectadas",
         "Similitud coseno pliego-contratista: 0.94",
         "Experiencia requerida: exacta al perfil del adjudicado",
@@ -109,18 +129,25 @@ export const MOCK_CONTRACT = {
       ],
     },
     {
+      id_bandera: "precio_atipico",
+      nombre: "Precio Atípico +47%",
+      peso_pct: 20,
+      score_aportado: 19,
+      nivel: "CRÍTICO",
+      evidencia: "Valor/ración: $18.400 COP vs. mediana $12.500 COP (+47%). Sobrecosto estimado: $1.422M COP.",
+      norma: "Ley 80/1993 Art. 23 — Principio de Economía",
+      fuente: "SECOP I — UNSPSC 50000000",
       id: "F09",
       codigo: "PRECIO-AT",
-      titulo: "Precio Atípico — Sobrecosto +47% sobre Mediana Mercado",
-      descripcion:
-        "Valor unitario por ración PAE: $18.400 COP vs. mediana mercado SECOP (UNSPSC 50000000) de $12.500 COP. Sobrecosto total estimado: $1.422M COP sobre mediana.",
+      titulo: "Precio Atípico — Sobrecosto +47%",
+      descripcion: "Valor unitario por ración PAE: $18.400 COP vs. mediana mercado de $12.500 COP. Sobrecosto total: $1.422M COP.",
       categoria: "manipulacion_adjudicacion",
       peso: 20,
       confianza: 96,
       severidad: "critical",
       icono: "trending-up",
       legal_ref: "Ley 80/1993 Art. 23 — Principio de Economía",
-      evidencia: [
+      evidencia_lista: [
         "Valor/ración: $18.400 vs mediana $12.500",
         "Sobrecosto: +47.2% sobre baseline UNSPSC",
         "8 contratos comparables analizados",
@@ -128,19 +155,25 @@ export const MOCK_CONTRACT = {
       ],
     },
     {
+      id_bandera: "unico_oferente",
+      nombre: "Único Oferente",
+      peso_pct: 20,
+      score_aportado: 20,
+      nivel: "ALTO",
+      evidencia: "1 proponente registrado. Proceso publicado 28/04/2026, cierre 01/05/2026 (3 días hábiles).",
+      norma: "Ley 80/1993 Art. 2 — Modalidades de selección; Decreto 1082/2015",
+      fuente: "SECOP I / Proceso CO1.PCCNTR.7842913",
       id: "F01",
       codigo: "ÚNICO-OF",
       titulo: "Único Oferente en Proceso Competitivo",
-      descripcion:
-        "A pesar de usar modalidad de Contratación Directa, el proceso fue publicado en SECOP con un solo proponente. Señal de pliego dirigido compatible con bandera NLP.",
+      descripcion: "A pesar de usar Contratación Directa, el proceso fue publicado con un solo proponente. Señal de pliego dirigido.",
       categoria: "manipulacion_proceso",
       peso: 20,
       confianza: 100,
       severidad: "high",
       icono: "alert-triangle",
-      legal_ref:
-        "Ley 80/1993 Art. 2 — Modalidades de selección; Decreto 1082/2015",
-      evidencia: [
+      legal_ref: "Ley 80/1993 Art. 2 — Modalidades de selección; Decreto 1082/2015",
+      evidencia_lista: [
         "1 oferente en registro SECOP",
         "Proceso publicado: 28/04/2026",
         "Cierre: 01/05/2026 (3 días hábiles)",
@@ -148,19 +181,25 @@ export const MOCK_CONTRACT = {
       ],
     },
     {
+      id_bandera: "horario_atipico",
+      nombre: "Firma Domingo 23:14",
+      peso_pct: 10,
+      score_aportado: 10,
+      nivel: "ALTO",
+      evidencia: "Contrato firmado domingo 03/05/2026 a las 23:14. Patrón documentado en escándalos PAE Cauca 2019-2022.",
+      norma: "Ley 1474/2011 — Estatuto Anticorrupción",
+      fuente: "SECOP I — metadatos firma",
       id: "F_TIME",
       codigo: "TIME-AT",
-      titulo: "Adjudicación en Horario Atípico — Domingo 23:14",
-      descripcion:
-        "El contrato fue firmado el domingo 03/05/2026 a las 23:14 horas. Patrón de adjudicaciones nocturnas y en días no laborales documentado en escándalos PAE 2019-2022.",
+      titulo: "Adjudicación en Horario Atípico",
+      descripcion: "El contrato fue firmado el domingo 03/05/2026 a las 23:14. Patrón de adjudicaciones nocturnas documentado en PAE 2019-2022.",
       categoria: "analisis_velocidad",
       peso: 10,
       confianza: 100,
       severidad: "high",
       icono: "clock",
-      legal_ref:
-        "Ley 1474/2011 — Estatuto Anticorrupción; patrón PAE validado",
-      evidencia: [
+      legal_ref: "Ley 1474/2011 — Estatuto Anticorrupción; patrón PAE validado",
+      evidencia_lista: [
         "Fecha firma: domingo 03/05/2026",
         "Hora firma: 23:14:32",
         "Fuera de horario laboral Alcaldía",
@@ -168,18 +207,25 @@ export const MOCK_CONTRACT = {
       ],
     },
     {
+      id_bandera: "desajuste_geografico",
+      nombre: "Desajuste Geográfico",
+      peso_pct: 10,
+      score_aportado: 9,
+      nivel: "MEDIO",
+      evidencia: "Contratista en Bogotá D.C. para ejecución en Argelia, Cauca (520 km, 12 h). Sin sucursal en Cauca.",
+      norma: "Decreto 1082/2015 — Principio de economía y eficiencia",
+      fuente: "RUES / SECOP I",
       id: "F15",
       codigo: "GEO-AT",
-      titulo: "Desajuste Geográfico — Contratista Bogotá, Contrato Cauca",
-      descripcion:
-        "Contratista registrado en Bogotá D.C. para un contrato de suministro PAE en Argelia, Cauca — municipio PDET de difícil acceso a 12 horas de Bogotá por carretera.",
+      titulo: "Desajuste Geográfico",
+      descripcion: "Contratista registrado en Bogotá para contrato de suministro PAE en Argelia, Cauca — municipio PDET a 12 h de Bogotá.",
       categoria: "senales_estructurales",
       peso: 10,
       confianza: 92,
       severidad: "medium",
       icono: "map-pin",
       legal_ref: "Decreto 1082/2015 — Principio de economía y eficiencia",
-      evidencia: [
+      evidencia_lista: [
         "Domicilio contratista: Bogotá D.C. (RUES)",
         "Lugar ejecución: Argelia, Cauca",
         "Distancia: ~520 km / 12h por carretera",
@@ -453,70 +499,165 @@ export const MOCK_CONTRACT = {
   },
 };
 
-// --- Borrador de denuncia (mock LLM output) ---
-// TODO: Generate via FastAPI: POST /llm/draft-complaint
-export const MOCK_DRAFT_DENUNCIA = `DENUNCIA FORMAL ANTE LA CONTRALORÍA GENERAL DE LA REPÚBLICA
-DELEGADA PARA EL SECTOR SOCIAL — PROGRAMA DE ALIMENTACIÓN ESCOLAR
-
-Bogotá D.C., 9 de mayo de 2026
-
-Señores
-CONTRALORÍA GENERAL DE LA REPÚBLICA
-Oficina de Participación Ciudadana y Desarrollo Social
-Ciudad
-
-Ref.: Denuncia ciudadana por presuntas irregularidades en el Contrato
-CO1.PCCNTR.7842913 de la Alcaldía Municipal de Argelia, Cauca
-
-Estimados señores:
-
-En ejercicio del derecho consagrado en el Artículo 209 de la Constitución Política de Colombia, y en cumplimiento del deber ciudadano de velar por el correcto uso de los recursos públicos, me permito presentar denuncia formal por las graves irregularidades detectadas por el Sistema de Vigilancia Ciudadana VIGÍA en el contrato de referencia.
-
-I. HECHOS
-
-1. La Alcaldía Municipal de Argelia (Cauca), NIT 800.123.456-7, suscribió el día domingo 3 de mayo de 2026 a las 23:14 horas — fuera del horario laboral — el Contrato CO1.PCCNTR.7842913 con la empresa Soluciones Nutricionales del Pacífico SAS (NIT 901.847.392-1), por valor de CUATRO MIL OCHOCIENTOS VEINTE MILLONES DE PESOS ($4.820.000.000 COP), para el suministro del Programa de Alimentación Escolar (PAE) 2026.
-
-2. EMPRESA DE PAPEL — ALERTA SARLAFT: La empresa adjudicataria fue constituida apenas 15 días antes de la firma del contrato (18 de abril de 2026), con un capital suscrito de QUINIENTOS MIL PESOS ($500.000 COP) y tan solo 3 empleados declarados, lo que configura una presunta empresa de fachada constituida específicamente para capturar recursos públicos, conforme al Art. 84 de la Ley 1474 de 2011 — Estatuto Anticorrupción.
-
-3. PERSONA EXPUESTA POLÍTICAMENTE — ALERTA SARLAFT: El representante legal de la empresa adjudicataria, identificado como Hernán Darío Mosquera Palacios (CC 79.847.123), aparece en la lista de Personas Expuestas Políticamente del SIGEP, en calidad de exfuncionario de la Secretaría de Educación del Cauca durante el período 2020-2023, y presenta coincidencias parciales con listas restrictivas internacionales (OFAC-SDN), lo que activa protocolos SARLAFT de la Circular Básica Jurídica de la Superintendencia Financiera.
-
-4. PLIEGO SASTRE — NLP VIGÍA: El modelo de Procesamiento de Lenguaje Natural del sistema VIGÍA detectó 14 cláusulas técnicas en el pliego de condiciones que restringen la competencia al perfil exacto del contratista, con una similitud coseno de 0.94 respecto a contratos previos del mismo par entidad-contratista, configurando la conducta tipificada en el Artículo 24 de la Ley 80 de 1993 como vulneración al Principio de Transparencia, y en el Artículo 5 de la Ley 1474 de 2011.
-
-5. SOBRECOSTO DEL 47%: El valor unitario por ración PAE pactado es de $18.400 COP, frente a una mediana de mercado de $12.500 COP (rango IQR: $11.200 - $13.800) calculada sobre 8 contratos comparables del mismo código UNSPSC 50000000 en municipios PDET del Cauca. El sobrecosto estimado sobre la mediana asciende a MIL CUATROCIENTOS VEINTIDÓS MILLONES DE PESOS ($1.422.000.000 COP), en violación del Principio de Economía consagrado en el Artículo 23 de la Ley 80 de 1993.
-
-6. RED DE EMPRESAS VINCULADAS: El análisis de red del sistema VIGÍA identificó 5 empresas relacionadas con la adjudicataria que comparten la misma dirección física (Calle 72 # 14-23 Of. 502, Bogotá D.C.), tienen representantes legales comunes y acumulan 6 multas en SECOP I por incumplimiento en contratos PAE. Esta estructura configura un posible anillo de colusión bajo los criterios de la bandera #10 de la metodología anticorrupcion.co, alineada con la Open Contracting Partnership.
-
-7. HORARIO ATÍPICO: La firma del contrato en día domingo a las 23:14 horas constituye un patrón documentado en los escándalos del PAE en Cauca y Chocó durante 2019-2022, sugiriendo deliberada evasión de controles institucionales.
-
-II. FUNDAMENTOS DE DERECHO
-
-- Ley 80 de 1993, Arts. 23, 24 y 26 — Principios de Economía, Transparencia y Responsabilidad.
-- Ley 1150 de 2007 — Medidas de eficiencia y transparencia.
-- Ley 1474 de 2011 (Estatuto Anticorrupción), Arts. 5 y 84 — Restricción a la competencia y tipificación de conductas corruptas.
-- Decreto 1082 de 2015 — Sistema de Compras y Contratación Pública.
-- Artículo 209 de la Constitución Política — Función pública al servicio del interés general.
-- Circular Básica Jurídica SFC — SARLAFT: Gestión del Riesgo de Lavado de Activos y Financiación del Terrorismo.
-
-III. SOLICITUD
-
-Solicito respetuosamente a la Contraloría General de la República:
-1. Abrir indagación preliminar sobre el contrato CO1.PCCNTR.7842913.
-2. Ordenar medida cautelar de suspensión del contrato mientras se investiga.
-3. Requerir a la Alcaldía de Argelia los soportes del proceso de selección.
-4. Verificar los antecedentes SARLAFT del representante legal en listas PEP y restrictivas.
-5. Investigar la red de 5 empresas vinculadas a la misma dirección física.
-
-Los datos aquí consignados fueron generados por el sistema VIGÍA con base en información pública de SECOP I, RUES, SIGEP y SIRI. Esta denuncia es una señal de alerta estadística que amerita revisión humana — no determina culpabilidad.
-
-Atentamente,
-
-[CIUDADANO DENUNCIANTE]
-Generado por VIGÍA — Sistema de IA para Veeduría Ciudadana
-https://vigia.gov.co | datos: datos.gov.co`;
+// =============================================================================
+// FEED DE ALERTAS — 10 contratos para el Dashboard
+// Entidades reales colombianas, scores variados
+// =============================================================================
+export const MOCK_ALERTS = [
+  {
+    id: "CO1.PCCNTR.7842913",
+    entidad: "Alcaldía Municipal de Argelia",
+    departamento: "Cauca",
+    proveedor: "Soluciones Nutricionales del Pacífico SAS",
+    valor: 4820000000,
+    modalidad: "Contratación Directa",
+    fecha_firma: "2026-05-03",
+    score: 92,
+    nivel: "CRÍTICO",
+    bandera_principal: "Empresa de maletín",
+    detalle_extra: "Empresa constituida 15 días antes del contrato. Valor escaló 700% en 3 años.",
+    dias_antes_constitucion: 15,
+    contract_data: MOCK_CONTRACT,
+  },
+  {
+    id: "SECOP2-2025-UNGRD-001",
+    entidad: "UNGRD",
+    departamento: "Bogotá D.C.",
+    proveedor: "IMPOAMERICANA ROGER S.A.S.",
+    valor: 46800000000,
+    modalidad: "Contratación Directa",
+    fecha_firma: "2023-08-15",
+    score: 87,
+    nivel: "CRÍTICO",
+    bandera_principal: "Empresa de maletín",
+    detalle_extra: "Empresa constituida 23 días antes del primer contrato. Valor escaló 700% en 3 años.",
+    dias_antes_constitucion: 23,
+    contract_data: null, // TODO: Fetch from FastAPI
+  },
+  {
+    id: "CO-ICBF-2025-7234",
+    entidad: "ICBF — Regional Córdoba",
+    departamento: "Córdoba",
+    proveedor: "Suministros Nutri-Costa SAS",
+    valor: 8300000000,
+    modalidad: "Licitación Pública",
+    fecha_firma: "2025-11-22",
+    score: 74,
+    nivel: "CRÍTICO",
+    bandera_principal: "Pliego sastre (NLP)",
+    detalle_extra: "Similitud coseno pliego-contratista 0.91. Único oferente en proceso licitatorio.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "SECOP2-2025-MINJUSTICIA-443",
+    entidad: "Ministerio de Justicia",
+    departamento: "Bogotá D.C.",
+    proveedor: "Consultores Legales & Asociados SAS",
+    valor: 2100000000,
+    modalidad: "Contratación Directa",
+    fecha_firma: "2025-09-07",
+    score: 68,
+    nivel: "ALTO",
+    bandera_principal: "Precio atípico +52%",
+    detalle_extra: "Tarifa hora-consultor: $850.000 COP vs. mediana $560.000 COP del sector.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "CO-INVIAS-2025-8819",
+    entidad: "INVIAS — Dirección Territorial Chocó",
+    departamento: "Chocó",
+    proveedor: "Constructora Vías del Atrato SAS",
+    valor: 15600000000,
+    modalidad: "Licitación Pública",
+    fecha_firma: "2025-08-30",
+    score: 61,
+    nivel: "ALTO",
+    bandera_principal: "Concentración proveedor recurrente",
+    detalle_extra: "Mismo contratista ganó 5 contratos INVIAS Chocó en 24 meses. 72% del presupuesto vial.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "CO-GOBCHOCO-2025-3341",
+    entidad: "Gobernación del Chocó",
+    departamento: "Chocó",
+    proveedor: "Salud Total Pacífico SAS",
+    valor: 6900000000,
+    modalidad: "Contratación Directa",
+    fecha_firma: "2025-07-14",
+    score: 55,
+    nivel: "ALTO",
+    bandera_principal: "Único oferente",
+    detalle_extra: "PAE salud. Proceso publicado 3 días hábiles. Sin otras propuestas.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "SECOP1-2025-CUNDINAMARCA-881",
+    entidad: "Gobernación de Cundinamarca",
+    departamento: "Cundinamarca",
+    proveedor: "Tecnologías Educativas SAS",
+    valor: 3450000000,
+    modalidad: "Selección Abreviada",
+    fecha_firma: "2025-06-20",
+    score: 42,
+    nivel: "MEDIO",
+    bandera_principal: "Desajuste geográfico",
+    detalle_extra: "Contratista Medellín para ejecución en 28 municipios de Cundinamarca sin logística declarada.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "SECOP2-2025-MINEDUCACION-229",
+    entidad: "Ministerio de Educación Nacional",
+    departamento: "Bogotá D.C.",
+    proveedor: "Editorial Educativa Nacional SAS",
+    valor: 1800000000,
+    modalidad: "Licitación Pública",
+    fecha_firma: "2025-05-12",
+    score: 34,
+    nivel: "MEDIO",
+    bandera_principal: "Ventana publicación corta",
+    detalle_extra: "Proceso publicado con 4 días hábiles de plazo. Mínimo OCDS: 5 días hábiles.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "CO-IDU-2025-1102",
+    entidad: "IDU — Instituto de Desarrollo Urbano",
+    departamento: "Bogotá D.C.",
+    proveedor: "Pavimentos Bogotá SAS",
+    valor: 22400000000,
+    modalidad: "Licitación Pública",
+    fecha_firma: "2025-04-08",
+    score: 21,
+    nivel: "BAJO",
+    bandera_principal: "Precio atípico +18%",
+    detalle_extra: "Costo m² pavimento: $380.000 COP vs. mediana $322.000. Dentro de rango aceptable con justificación técnica.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+  {
+    id: "CO-SENA-2025-0671",
+    entidad: "SENA — Regional Antioquia",
+    departamento: "Antioquia",
+    proveedor: "Soluciones Tecnológicas Educativas Ltda.",
+    valor: 950000000,
+    modalidad: "Mínima Cuantía",
+    fecha_firma: "2025-03-15",
+    score: 12,
+    nivel: "BAJO",
+    bandera_principal: "Ventana publicación corta",
+    detalle_extra: "Proceso estándar. Sin señales de riesgo adicionales detectadas.",
+    dias_antes_constitucion: null,
+    contract_data: null,
+  },
+];
 
 // =============================================================================
 // BANDERAS ESTÁNDAR OCDS (Cardinal / Open Contracting Partnership)
-// Simulan la librería open-source 'Cardinal' de la OCP
 // =============================================================================
 export const BANDERAS_OCDS = [
   {
@@ -524,7 +665,7 @@ export const BANDERAS_OCDS = [
     codigo: "OCDS-F02",
     titulo: "Ventana de Publicación Inusualmente Corta",
     descripcion:
-      "El proceso fue publicado el 28/04/2026 con cierre el 01/05/2026 — solo 3 días calendario (< 5 días hábiles recomendados por OCDS). Esta práctica desincentiva la participación de nuevos proponentes y es señal de pliego dirigido según los estándares de la Open Contracting Partnership.",
+      "El proceso fue publicado el 28/04/2026 con cierre el 01/05/2026 — solo 3 días calendario (< 5 días hábiles recomendados por OCDS).",
     categoria: "manipulacion_proceso",
     peso: 15,
     confianza: 100,
@@ -543,7 +684,7 @@ export const BANDERAS_OCDS = [
     codigo: "OCDS-F07",
     titulo: "Concentración de Adjudicaciones — Proveedor Recurrente",
     descripcion:
-      "El sistema identifica que la Alcaldía de Argelia ha concentrado el 68% de su presupuesto de suministros en el mismo grupo de empresas vinculadas en los últimos 12 meses. Patrón de captura del proceso de selección según el estándar OCDS F07.",
+      "La Alcaldía de Argelia concentró el 68% de su presupuesto de suministros en el mismo grupo de empresas vinculadas en los últimos 12 meses.",
     categoria: "manipulacion_adjudicacion",
     peso: 20,
     confianza: 82,
@@ -562,7 +703,7 @@ export const BANDERAS_OCDS = [
     codigo: "OCDS-F10",
     titulo: "Anillo de Colusión Detectado — Rotación de Ganadores",
     descripcion:
-      "Análisis de red detecta que 3 de las 5 empresas vinculadas han rotado como adjudicatarias de contratos PAE en Cauca durante 2024-2026, con patrones de precios coordinados (diferencia < 2% entre ofertas). Indicador OCDS de acuerdo de precios o distribución territorial de contratos.",
+      "3 de las 5 empresas vinculadas han rotado como adjudicatarias de contratos PAE en Cauca durante 2024-2026, con patrones de precios coordinados (diferencia < 2%).",
     categoria: "manipulacion_adjudicacion",
     peso: 25,
     confianza: 78,
@@ -580,7 +721,6 @@ export const BANDERAS_OCDS = [
 
 // =============================================================================
 // NOTICIAS PACO — Contexto Mediático Territorial
-// Simulan la base de datos del Portal Anticorrupción PACO
 // TODO: Fetch from FastAPI: GET /paco/news?municipio=Argelia&departamento=Cauca
 // =============================================================================
 export const PACO_NOTICIAS = [
@@ -593,7 +733,7 @@ export const PACO_NOTICIAS = [
     tipo: "escandalo",
     relevancia: "alta",
     extracto:
-      "Investigación periodística reveló que contratos PAE adjudicados a empresas sin experiencia en el Cauca desviaron más de $12.000 millones entre 2021 y 2023. Procuraduría abrió investigación disciplinaria contra 4 alcaldes.",
+      "Investigación periodística reveló que contratos PAE adjudicados a empresas sin experiencia en el Cauca desviaron más de $12.000 millones entre 2021 y 2023.",
     tags: ["PAE", "Cauca", "Procuraduría", "Desvío fondos"],
   },
   {
@@ -605,7 +745,7 @@ export const PACO_NOTICIAS = [
     tipo: "alerta",
     relevancia: "alta",
     extracto:
-      "Informe de la CGR identificó 47 empresas constituidas en los 30 días previos a la firma de contratos PAE en municipios PDET del Cauca y Chocó. Argelia aparece mencionado en 3 hallazgos fiscales.",
+      "Informe de la CGR identificó 47 empresas constituidas en los 30 días previos a la firma de contratos PAE en municipios PDET del Cauca y Chocó.",
     tags: ["Contraloría", "Empresa papel", "PDET", "Hallazgo fiscal"],
   },
   {
@@ -617,13 +757,13 @@ export const PACO_NOTICIAS = [
     tipo: "contexto",
     relevancia: "media",
     extracto:
-      "El informe correlaciona la presencia de cultivos de coca con un 34% más de irregularidades en contratación pública municipal. Argelia, Cauca registra 1.240 hectáreas de coca según el monitoreo SIMCI 2025.",
+      "El informe correlaciona la presencia de cultivos de coca con un 34% más de irregularidades en contratación pública municipal.",
     tags: ["UNODC", "Cultivos ilícitos", "Contratación", "SIMCI"],
   },
 ];
 
 // =============================================================================
-// DEBIDA DILIGENCIA SARLAFT — Ficha estructurada del contratista
+// DEBIDA DILIGENCIA SARLAFT
 // TODO: Fetch from FastAPI: GET /due-diligence/:nit
 // =============================================================================
 export const DUE_DILIGENCE = {
@@ -688,5 +828,95 @@ export const DUE_DILIGENCE = {
   ],
   fecha_consulta: "09/05/2026 10:47",
 };
+
+// =============================================================================
+// BORRADOR DENUNCIA — Formato VIGÍA
+// TODO: Generate via FastAPI: POST /llm/draft-complaint
+// =============================================================================
+export const MOCK_DRAFT_DENUNCIA = `╔═══════════════════════════════════════════════════╗
+║        HALLAZGOS PRELIMINARES — VIGÍA             ║
+║  Sistema de IA para Veeduría Ciudadana            ║
+╚═══════════════════════════════════════════════════╝
+
+ID SECOP II  : CO1.PCCNTR.7842913
+Entidad      : Alcaldía Municipal de Argelia (Cauca)
+Proveedor    : Soluciones Nutricionales del Pacífico SAS
+Valor        : $4.820.000.000 COP
+Modalidad    : Contratación Directa
+Fecha firma  : Domingo 03/05/2026 — 23:14 hrs
+
+Score VIGÍA  : 92/100
+Nivel riesgo : CRÍTICO
+Banderas     : 7 activas
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HALLAZGOS PRINCIPALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[1] EMPRESA DE MALETÍN — Peso: 30/100 — CRÍTICO
+    Evidencia : Empresa constituida 15 días antes del contrato
+                (18-abr-2026). Capital: $500.000 COP. 3 empleados.
+    Norma     : Art. 84, Ley 1474/2011 — Estatuto Anticorrupción
+    Fuente    : RUES / qmzu-gj57
+
+[2] REPRESENTANTE LEGAL PEP — Peso: 30/100 — CRÍTICO
+    Evidencia : Hernán D. Mosquera Palacios — exfuncionario Secretaría
+                Educación Cauca 2020-2023. Match parcial OFAC-SDN 78%.
+    Norma     : SARLAFT — Circular Básica Jurídica SFC
+    Fuente    : SIGEP II / OFAC SDN List
+
+[3] PLIEGO SASTRE (NLP) — Peso: 25/100 — CRÍTICO
+    Evidencia : 14 cláusulas técnicas restringen la competencia al
+                perfil exacto del adjudicado. Similitud coseno: 0.94.
+    Norma     : Ley 80/1993 Art. 24 — Principio de Transparencia
+    Fuente    : SECOP II NLP / VIGÍA
+
+[4] PRECIO ATÍPICO +47% — Peso: 20/100 — CRÍTICO
+    Evidencia : Valor/ración: $18.400 COP vs. mediana $12.500 COP.
+                Sobrecosto estimado: $1.422.000.000 COP.
+    Norma     : Ley 80/1993 Art. 23 — Principio de Economía
+    Fuente    : SECOP I — UNSPSC 50000000
+
+[5] ÚNICO OFERENTE — Peso: 20/100 — ALTO
+    Evidencia : 1 proponente registrado. Proceso publicado 28/04/2026,
+                cierre 01/05/2026 (3 días hábiles).
+    Norma     : Ley 80/1993 Art. 2; Decreto 1082/2015
+    Fuente    : SECOP I / Proceso CO1.PCCNTR.7842913
+
+[6] FIRMA DOMINGO 23:14 — Peso: 10/100 — ALTO
+    Evidencia : Contrato firmado domingo 03/05/2026 a las 23:14.
+                Patrón documentado en escándalos PAE Cauca 2019-2022.
+    Norma     : Ley 1474/2011 — Estatuto Anticorrupción
+    Fuente    : SECOP I — metadatos firma
+
+[7] DESAJUSTE GEOGRÁFICO — Peso: 10/100 — MEDIO
+    Evidencia : Contratista en Bogotá D.C. para ejecución en Argelia,
+                Cauca (520 km, 12 h). Sin sucursal en Cauca.
+    Norma     : Decreto 1082/2015 — Principio de economía y eficiencia
+    Fuente    : RUES / SECOP I
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ORGANISMOS RECOMENDADOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  → Contraloría General de la República
+    Oficina de Participación Ciudadana
+    contraloria.gov.co/web/denuncia-ciudadana
+
+  → Procuraduría General de la Nación
+    Sistema Único de Información de Quejas y Soluciones
+    accion.procuraduria.gov.co
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AVISO LEGAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Este reporte contiene indicadores estadísticos de riesgo,
+NO acusaciones formales. Los hallazgos ameritan revisión
+humana por parte de los organismos de control competentes.
+
+Metodología: Fazekas & Kocsis (2020) + OCP Red Flags (2024)
+Datos: SECOP I, SECOP II, RUES, SIGEP II, SIRI (públicos)
+Generado: VIGÍA — vigia.gov.co · 09/05/2026`;
 
 export default MOCK_CONTRACT;

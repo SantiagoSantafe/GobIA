@@ -4,23 +4,25 @@
 
 @layer base {
   html {
-    background-color: #F8FAFC;
-    color: #0F172A;
+    background-color: #f5f5f7;
+    color: #1d1d1f;
     font-family: "Space Grotesk", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
   }
 
   * { box-sizing: border-box; }
 
-  ::-webkit-scrollbar       { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: #F1F5F9; }
-  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+  /* Apple-style minimal scrollbar */
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d2d2d7; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #aeaeb2; }
 }
 
 @layer components {
-  /* Base card — white bg, subtle shadow */
+  /* ── Card ── */
   .card {
     @apply bg-white border border-surface-3 rounded-2xl shadow-card;
   }
@@ -29,41 +31,49 @@
     @apply px-5 py-4 border-b border-surface-3 flex items-center gap-2;
   }
 
-  /* Glassmorphism card — for hero and overlay areas */
+  /* ── Glass card (overlay areas) ── */
   .glass-card {
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.07), 0 1px 4px rgba(15, 23, 42, 0.04);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(232, 232, 237, 0.9);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
     border-radius: 1rem;
   }
 
-  /* Monospace label utility */
+  /* ── Label mono ── */
   .label-mono {
-    @apply font-mono text-xs tracking-wider uppercase text-surface-4;
+    @apply font-mono text-[10px] tracking-label uppercase text-surface-4;
   }
 
-  /* Risk severity badges — semi-transparent on white */
+  /* ── Section label (demoanalitica style) ── */
+  .section-label {
+    @apply text-[11px] font-mono tracking-ultra uppercase text-vigia-muted;
+  }
+
+  /* ── Risk severity badges ── */
   .risk-badge-critical {
-    @apply bg-red-50 text-red-600 border border-red-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+    @apply bg-red-50 text-risk-critical border border-red-200 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-semibold;
   }
   .risk-badge-high {
-    @apply bg-amber-50 text-amber-600 border border-amber-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+    @apply bg-orange-50 text-risk-high border border-orange-200 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-semibold;
   }
   .risk-badge-medium {
-    @apply bg-yellow-50 text-yellow-600 border border-yellow-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+    @apply bg-yellow-50 text-risk-medium border border-yellow-200 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-semibold;
+  }
+  .risk-badge-low {
+    @apply bg-green-50 text-risk-low border border-green-200 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-semibold;
   }
   .risk-badge-info {
-    @apply bg-cyan-50 text-cyan-600 border border-cyan-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+    @apply bg-cyan-50 text-risk-info border border-cyan-200 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-semibold;
   }
   .risk-badge-ocds {
-    @apply bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold;
+    @apply bg-blue-50 text-ocds border border-ocds-border rounded-full px-2.5 py-0.5 text-[10px] font-mono font-semibold;
   }
 
-  /* Shimmer skeleton */
+  /* ── Skeleton shimmer ── */
   .shimmer-bg {
-    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background: linear-gradient(90deg, #f5f5f7 25%, #ebebf0 50%, #f5f5f7 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }
@@ -76,12 +86,12 @@
 
 @keyframes typing-cursor {
   0%, 100% { opacity: 1; }
-  50%      { opacity: 0; }
+  50%       { opacity: 0; }
 }
 
 .typing-cursor::after {
   content: "▌";
   animation: typing-cursor 0.8s infinite;
-  color: #6366F1;
+  color: #e8601c;
   margin-left: 1px;
 }

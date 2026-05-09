@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 
+// VIGÍA color scale: 0-20 bajo / 21-45 medio / 46-70 alto / 71-100 crítico
 const SCORE_CONFIG = {
-  critical: { stroke: "#ef4444", glow: "rgba(239,68,68,0.3)", label: "RIESGO CRÍTICO", bg: "#fef2f2" },
-  high:     { stroke: "#f59e0b", glow: "rgba(245,158,11,0.3)", label: "RIESGO ALTO",     bg: "#fffbeb" },
-  medium:   { stroke: "#eab308", glow: "rgba(234,179,8,0.3)",  label: "RIESGO MEDIO",    bg: "#fefce8" },
-  low:      { stroke: "#6366f1", glow: "rgba(99,102,241,0.2)", label: "RIESGO BAJO",     bg: "#eef2ff" },
+  critical: { stroke: "#EF4444", glow: "rgba(239,68,68,0.35)",  label: "RIESGO CRÍTICO", bg: "#fef2f2" },
+  high:     { stroke: "#F97316", glow: "rgba(249,115,22,0.3)",  label: "RIESGO ALTO",    bg: "#fff7ed" },
+  medium:   { stroke: "#EAB308", glow: "rgba(234,179,8,0.3)",   label: "RIESGO MEDIO",   bg: "#fefce8" },
+  low:      { stroke: "#22C55E", glow: "rgba(34,197,94,0.25)",  label: "RIESGO BAJO",    bg: "#f0fdf4" },
 };
 
 function getLevel(score) {
-  if (score >= 80) return "critical";
-  if (score >= 60) return "high";
-  if (score >= 40) return "medium";
+  if (score >= 71) return "critical";
+  if (score >= 46) return "high";
+  if (score >= 21) return "medium";
   return "low";
 }
 

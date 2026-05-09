@@ -27,10 +27,10 @@ const TABS = [
   },
 ];
 
-export function TabNav({ activeTab, onTabChange, alertCounts = {} }) {
+export function TabNav({ activeTab, onTabChange, alertCounts = {}, compact = false }) {
   return (
-    <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-surface-3">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
+    <div className={`${compact ? "" : "sticky top-0 z-40"} bg-white/90 backdrop-blur-md border-b border-surface-3`}>
+      <div className={compact ? "px-2" : "max-w-[1600px] mx-auto px-4 sm:px-6"}>
         <nav className="flex items-center gap-1 overflow-x-auto" role="tablist">
           {TABS.map((tab, i) => {
             const Icon = tab.icon;

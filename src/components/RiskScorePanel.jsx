@@ -73,27 +73,35 @@ function FlagRow({ flag, index, isOcds }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = ICON_MAP[flag.icono] ?? AlertTriangle;
 
+  // Support both old severidad field and new nivel field
+  const sev = flag.severidad ?? (
+    flag.nivel === "CRÍTICO" ? "critical"
+    : flag.nivel === "ALTO"  ? "high"
+    : flag.nivel === "MEDIO" ? "medium"
+    : "medium"
+  );
+
   const borderColor = isOcds
     ? "border-blue-100 hover:border-blue-200"
-    : flag.severidad === "critical"
+    : sev === "critical"
     ? "border-red-100 hover:border-red-200"
-    : flag.severidad === "high"
+    : sev === "high"
     ? "border-amber-100 hover:border-amber-200"
     : "border-yellow-100 hover:border-yellow-200";
 
   const iconStyle = isOcds
     ? "bg-blue-50 text-blue-600"
-    : flag.severidad === "critical"
+    : sev === "critical"
     ? "bg-red-50 text-red-500"
-    : flag.severidad === "high"
+    : sev === "high"
     ? "bg-amber-50 text-amber-500"
     : "bg-yellow-50 text-yellow-500";
 
   const weightColor = isOcds
     ? "text-blue-600"
-    : flag.severidad === "critical"
+    : sev === "critical"
     ? "text-red-600"
-    : flag.severidad === "high"
+    : sev === "high"
     ? "text-amber-500"
     : "text-yellow-500";
 
@@ -111,16 +119,16 @@ function FlagRow({ flag, index, isOcds }) {
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-0.5">
-            <SeverityBadge severity={flag.severidad} />
-            <span className="font-mono text-[10px] text-slate-400">{flag.codigo}</span>
+            <SeverityBadge severity={sev} />
+            <span className="font-mono text-[10px] text-slate-400">{flag.codigo ?? flag.id_bandera}</span>
           </div>
           <p className="text-sm text-slate-800 font-display font-medium leading-snug">
-            {flag.titulo}
+            {flag.titulo ?? flag.nombre}
           </p>
         </div>
         <div className="shrink-0 flex flex-col items-end gap-1.5 ml-1">
           <span className="font-mono text-[10px] text-slate-400">
-            w<span className={`font-bold ${weightColor}`}>{flag.peso}</span>
+            w<span className={`font-bold ${weightColor}`}>{flag.peso ?? flag.peso_pct}</span>
           </span>
           <span className="text-slate-400">
             {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
@@ -131,13 +139,14 @@ function FlagRow({ flag, index, isOcds }) {
       {expanded && (
         <div className="px-3 pb-3 border-t border-surface-3 animate-fade-in">
           <p className="text-xs text-slate-500 leading-relaxed mt-2 mb-3">
-            {flag.descripcion}
+            {flag.descripcion ?? flag.evidencia}
           </p>
-          {flag.evidencia?.length > 0 && (
+          {/* Support both evidencia_lista (array) and evidencia (string) */}
+          {(flag.evidencia_lista ?? flag.evidencia) && (
             <div className="mb-3">
               <p className="label-mono mb-1.5">Evidencia</p>
               <ul className="space-y-1">
-                {flag.evidencia.map((e, i) => (
+                {(flag.evidencia_lista ?? [flag.evidencia]).map((e, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs font-mono text-slate-500">
                     <span className={`mt-0.5 ${isOcds ? "text-blue-500" : "text-red-400"}`}>▸</span>
                     {e}
@@ -146,10 +155,20 @@ function FlagRow({ flag, index, isOcds }) {
               </ul>
             </div>
           )}
-          <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400 border-t border-surface-3 pt-2">
-            <Info size={10} />
-            {flag.legal_ref}
-          </div>
+          {/* Norma / fuente for new VIGÍA flags */}
+          {flag.norma && (
+            <div className="flex items-start gap-1.5 text-[10px] font-mono text-slate-400 border-t border-surface-3 pt-2 flex-wrap gap-y-1">
+              <Info size={10} className="mt-0.5 shrink-0" />
+              <span>{flag.norma}</span>
+              {flag.fuente && <span className="text-slate-300">· {flag.fuente}</span>}
+            </div>
+          )}
+          {flag.legal_ref && !flag.norma && (
+            <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400 border-t border-surface-3 pt-2">
+              <Info size={10} />
+              {flag.legal_ref}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -198,7 +217,7 @@ export function RiskScorePanel({ contract, banderasOcds = [] }) {
       <CardHeader>
         <Shield size={15} className="text-risk-critical" />
         <span className="font-display font-semibold text-sm text-slate-800">
-          Panel SARLAFT · Score de Riesgo
+          Panel VIGÍA · 7 Banderas Rojas
         </span>
         <span className="ml-auto font-mono text-[10px] text-slate-400">{id}</span>
       </CardHeader>
@@ -223,12 +242,12 @@ export function RiskScorePanel({ contract, banderasOcds = [] }) {
           )}
 
           {/* Score pill */}
-          <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-center">
-            <p className="font-mono text-sm text-red-600 font-bold tracking-wide">
-              {totalFlags} BANDERAS ACTIVAS
+          <div className="rounded-xl bg-red-50 border border-red-100 p-3 text-center">
+            <p className="font-mono text-sm text-risk-critical font-semibold tracking-wide">
+              {totalFlags} banderas activas
             </p>
-            <p className="text-xs text-red-500 mt-0.5">
-              {banderasOcds.length} estándar OCDS · {num_banderas} alertas avanzadas IA VIGÍA
+            <p className="text-[10px] text-risk-critical/70 mt-0.5 font-mono">
+              {banderasOcds.length} estándar OCDS · {num_banderas} alertas IA VIGÍA
             </p>
           </div>
 
@@ -242,9 +261,9 @@ export function RiskScorePanel({ contract, banderasOcds = [] }) {
               { label: "Constituida", value: contratista.fecha_constitucion },
               { label: "Firma del contrato", value: signingLabel },
             ].map((item) => (
-              <div key={item.label} className="bg-surface-1 border border-surface-3 rounded-xl p-2.5">
+              <div key={item.label} className="bg-surface-1 border border-vigia-border rounded-xl p-2.5">
                 <p className="label-mono mb-0.5">{item.label}</p>
-                <p className="text-xs text-slate-700 font-display font-medium leading-snug">
+                <p className="text-xs text-vigia-body font-display font-medium leading-snug">
                   {item.value}
                 </p>
               </div>

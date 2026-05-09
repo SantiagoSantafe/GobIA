@@ -66,12 +66,12 @@ export function LLMActionPanel({ contract }) {
       <CardHeader className="flex-wrap gap-y-2">
         <BotMessageSquare size={15} className="text-action-primary" />
         <span className="font-display font-semibold text-sm text-slate-800">
-          Abogado IA — Generador de Denuncia Automática
+          Generador de Hallazgos — Formato VIGÍA
         </span>
         <div className="ml-auto flex items-center gap-2 flex-wrap">
           <span className="flex items-center gap-1.5 font-mono text-[10px] text-action-primary bg-action-light border border-action-border rounded-full px-2.5 py-1">
             <Zap size={9} />
-            LLM · Ley 80 · SARLAFT · Art. 209 CP
+            7 Banderas · Fazekas &amp; Kocsis · OCP 2024
           </span>
           {phase !== "idle" && (
             <button onClick={handleReset} className="text-xs font-mono text-slate-400 hover:text-slate-700 transition-colors">
@@ -107,12 +107,12 @@ export function LLMActionPanel({ contract }) {
             </div>
             <div>
               <p className="font-display font-semibold text-slate-800 text-lg mb-1">
-                Generar Denuncia ante la Contraloría
+                Generar Hallazgos VIGÍA
               </p>
               <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
-                El sistema IA redactará un borrador de denuncia formal citando las
-                irregularidades detectadas, fundamentos de derecho y evidencia
-                cuantitativa. Revisa y personaliza antes de presentar.
+                Reporte estructurado con las 7 banderas activas, evidencia cuantitativa,
+                norma aplicable y organismos recomendados.
+                Indicadores de riesgo — no acusaciones formales.
               </p>
             </div>
             <button
@@ -121,10 +121,10 @@ export function LLMActionPanel({ contract }) {
                 bg-action-primary hover:bg-action-hover transition-all duration-150 shadow-card-md hover:shadow-glow-indigo active:scale-[0.98]"
             >
               <Zap size={17} />
-              Generar Denuncia Automática
+              Generar Reporte de Hallazgos
             </button>
             <p className="text-xs font-mono text-slate-400">
-              Las alertas son indicios estadísticos — siempre requieren revisión humana
+              indicadores de riesgo · no acusaciones formales
             </p>
           </div>
         )}

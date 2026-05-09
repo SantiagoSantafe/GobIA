@@ -4,7 +4,7 @@ const VARIANT_CLASSES = {
   medium:   "risk-badge-medium",
   info:     "risk-badge-info",
   ocds:     "risk-badge-ocds",
-  neutral:  "bg-slate-100 text-slate-500 border border-slate-200 rounded-full px-2.5 py-0.5 text-xs font-mono",
+  neutral:  "bg-surface-2 text-vigia-muted border border-vigia-border rounded-full px-2.5 py-0.5 text-[10px] font-mono",
 };
 
 const LABELS = {
