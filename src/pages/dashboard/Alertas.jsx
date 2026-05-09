@@ -400,7 +400,7 @@ export default function Alertas() {
 
         {/* Detail panel */}
         {selectedAlert && (
-          <div className="lg:sticky lg:top-[6.5rem] lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-hidden rounded-2xl border border-vigia-border bg-white shadow-card-lg flex flex-col">
+          <div className="lg:sticky lg:top-[6.5rem] lg:self-start lg:max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-vigia-border bg-white shadow-card-lg flex flex-col">
             <DetailPanel alert={selectedAlert} onClose={() => setSelectedAlert(null)} />
           </div>
         )}

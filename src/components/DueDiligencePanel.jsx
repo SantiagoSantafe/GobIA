@@ -1,6 +1,5 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import {
   FileSearch, Download, CheckCircle, Loader2,
   AlertTriangle, ShieldAlert, XCircle, Leaf,
@@ -50,62 +49,172 @@ function DDQSection({ title, icon: Icon, iconClass, children }) {
   );
 }
 
-// ── PDF export logic ──────────────────────────────────────────────────────────
-async function exportToPDF(reportRef, ddq, contractId) {
-  // TODO: Replace canvas capture with FastAPI: POST /export/pdf
-  // Body: { contract_id, include_graph: true, include_score: true }
-  const canvas = await html2canvas(reportRef, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    logging: false,
-  });
-
+// ── PDF export — generación directa con jsPDF (sin html2canvas) ──────────────
+// TODO: Replace with FastAPI: POST /export/pdf for server-side rendering
+function exportToPDF(ddq, contractId) {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const margin = 14;
-  const usableW = pageW - margin * 2;
+  const m = 14;        // left/right margin
+  const lineH = 6;     // line height
+  let y = 0;
 
-  // Header band
+  const fmt = (v) => v != null
+    ? new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v)
+    : "No registra";
+
+  const newPage = () => {
+    doc.addPage();
+    y = 20;
+  };
+
+  const checkY = (needed = 10) => { if (y + needed > pageH - 14) newPage(); };
+
+  // ── Header band ──
   doc.setFillColor(99, 102, 241);
-  doc.rect(0, 0, pageW, 22, "F");
+  doc.rect(0, 0, pageW, 24, "F");
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
-  doc.text("VIGÍA — Análisis de Debida Diligencia SARLAFT", margin, 14);
+  doc.setFontSize(14);
+  doc.text("VIGIA — Analisis de Debida Diligencia SARLAFT", m, 11);
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.text(`Contrato: ${contractId}  ·  Generado: ${new Date().toLocaleString("es-CO")}`, margin, 19);
+  doc.text(`Contrato: ${contractId}   Generado: ${new Date().toLocaleString("es-CO")}`, m, 18);
+  doc.setFillColor(239, 68, 68);
+  doc.rect(0, 24, pageW, 4, "F");
+  y = 34;
 
-  // Report image
-  const imgData = canvas.toDataURL("image/jpeg", 0.92);
-  const imgH = (canvas.height * usableW) / canvas.width;
-  let curY = 28;
+  const section = (title) => {
+    checkY(12);
+    doc.setFillColor(248, 250, 252);
+    doc.rect(m, y, pageW - m * 2, 7, "F");
+    doc.setDrawColor(226, 232, 240);
+    doc.rect(m, y, pageW - m * 2, 7, "S");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(51, 65, 85);
+    doc.text(title.toUpperCase(), m + 3, y + 5);
+    y += 10;
+  };
 
-  if (curY + imgH > pageH - 16) {
-    const ratio = (pageH - 16 - curY) / imgH;
-    doc.addImage(imgData, "JPEG", margin, curY, usableW, imgH * ratio);
-    doc.addPage();
-    curY = 14;
-    const remainH = imgH * (1 - ratio);
-    doc.addImage(imgData, "JPEG", margin, curY, usableW, remainH, undefined, "FAST", 0, 1 - ratio);
-  } else {
-    doc.addImage(imgData, "JPEG", margin, curY, usableW, imgH);
-  }
+  const row = (label, value, accent = false) => {
+    checkY(lineH + 2);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(label, m + 2, y);
+    doc.setFont("helvetica", accent ? "bold" : "normal");
+    doc.setTextColor(accent ? 220 : 30, accent ? 38 : 41, accent ? 38 : 59);
+    const safeVal = String(value ?? "No registra").slice(0, 70);
+    doc.text(safeVal, m + 55, y);
+    doc.setDrawColor(226, 232, 240);
+    doc.line(m, y + 1.5, pageW - m, y + 1.5);
+    y += lineH;
+  };
 
-  // Footer
-  const totalPages = doc.getNumberOfPages();
-  for (let p = 1; p <= totalPages; p++) {
+  // ── SCORE BANNER ──
+  doc.setFillColor(254, 242, 242);
+  doc.rect(m, y, pageW - m * 2, 14, "F");
+  doc.setDrawColor(252, 165, 165);
+  doc.rect(m, y, pageW - m * 2, 14, "S");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(220, 38, 38);
+  doc.text("92 / 100", m + 6, y + 10);
+  doc.setFontSize(10);
+  doc.setTextColor(185, 28, 28);
+  doc.text("RIESGO CRITICO  |  7 Banderas Activas  |  SARLAFT Alerta", m + 48, y + 10);
+  y += 20;
+
+  // ── IDENTIFICACION ──
+  section("1. Identificacion del Contratista");
+  row("NIT", ddq.nit);
+  row("Razon social", ddq.empresa);
+  row("Tipo sociedad", ddq.tipo_sociedad);
+  row("Objeto social", ddq.objeto_social);
+  row("Domicilio", ddq.ciudad_domicilio);
+  row("Direccion", ddq.direccion);
+  row("Fecha constitucion", `${ddq.fecha_constitucion} (hace ${ddq.meses_existencia} meses)`, true);
+  row("Capital suscrito", fmt(ddq.capital_suscrito), true);
+  row("Empleados declarados", `${ddq.num_empleados} personas`);
+
+  // ── REPRESENTANTE LEGAL ──
+  section("2. Representante Legal");
+  row("Nombre", ddq.rep_legal?.nombre);
+  row("Cedula", ddq.rep_legal?.cc);
+  row("En lista PEP", ddq.rep_legal?.pep ? "SI — PERSONA EXPUESTA POLITICAMENTE" : "No", ddq.rep_legal?.pep);
+  row("Listas restrictivas", ddq.rep_legal?.listas?.join(" | ") ?? "—", true);
+  row("Match OFAC SDN", ddq.rep_legal?.match_ofac_pct ? `${ddq.rep_legal.match_ofac_pct}% coincidencia` : "—", true);
+  row("Cargo anterior", ddq.rep_legal?.cargo_anterior ?? "—");
+
+  // ── ALERTAS SARLAFT ──
+  section("3. Alertas SARLAFT");
+  (ddq.alertas_sarlaft ?? []).forEach((a) => {
+    checkY(lineH + 2);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(a.nivel === "critical" ? 220 : 180, a.nivel === "critical" ? 38 : 80, 38);
+    doc.text(`[${a.nivel?.toUpperCase() ?? "?"}]`, m + 2, y);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(30, 41, 59);
+    doc.text(`${a.tipo}: ${a.descripcion}`.slice(0, 90), m + 22, y);
+    y += lineH;
+  });
+
+  // ── CONTEXTO TERRITORIAL ──
+  section("4. Contexto Territorial");
+  const t = ddq.territorio ?? {};
+  row("Municipio", `${t.municipio}, ${t.departamento}`);
+  row("Zona PDET", t.pdet ? "SI — Programa Desarrollo con Enfoque Territorial" : "No", t.pdet);
+  row("Zona de Paz", t.zona_paz ? "SI — Acuerdos de Paz 2016" : "No");
+  row("Cultivos ilicitos", t.cultivos_ilicitos?.presente
+    ? `SI — ${t.cultivos_ilicitos.hectareas?.toLocaleString("es-CO")} ha coca (${t.cultivos_ilicitos.fuente})`
+    : "No registra", t.cultivos_ilicitos?.presente);
+  row("Conflicto activo", t.conflicto_activo ? (t.grupos_armados ?? []).join(" · ") : "No", t.conflicto_activo);
+  row("Riesgo electoral", t.indice_riesgo_electoral ?? "—");
+
+  // ── HISTORIAL SECOP ──
+  section("5. Historial SECOP");
+  const h = ddq.historial_secop ?? {};
+  row("Contratos previos", `${h.contratos_previos ?? 0}`, (h.contratos_previos ?? 0) === 0);
+  row("Multas", `${h.multas ?? 0}`);
+  row("Valor acumulado", fmt(h.valor_acumulado ?? 0));
+  row("Primera aparicion", h.primera_aparicion_secop ?? "Este contrato");
+
+  // ── FUNDAMENTOS LEGALES ──
+  checkY(40);
+  section("6. Fundamentos Legales");
+  const normas = [
+    "Art. 209 CP — Funcion publica al servicio del interes general",
+    "Ley 80/1993 Art. 23-24 — Principios de Economia y Transparencia",
+    "Ley 1474/2011 Art. 84 — Tipificacion empresa fachada",
+    "Decreto 1082/2015 — Sistema de Compras y Contratacion Publica",
+    "SARLAFT — Circular Basica Juridica SFC — Gestion Riesgo LA/FT",
+    "OFAC SDN List — Coincidencia parcial representante legal",
+  ];
+  normas.forEach((n) => {
+    checkY(lineH);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(51, 65, 85);
+    doc.text(`• ${n}`, m + 2, y);
+    y += lineH;
+  });
+
+  // ── FOOTER en todas las paginas ──
+  const total = doc.getNumberOfPages();
+  for (let p = 1; p <= total; p++) {
     doc.setPage(p);
-    doc.setFontSize(7);
+    doc.setFillColor(248, 250, 252);
+    doc.rect(0, pageH - 10, pageW, 10, "F");
+    doc.setFontSize(6.5);
+    doc.setFont("helvetica", "normal");
     doc.setTextColor(148, 163, 184);
     doc.text(
-      "VIGÍA — Sistema de IA para Veeduría Ciudadana · datos públicos SECOP · señales de alerta, no determinan culpabilidad",
-      margin,
-      pageH - 5
+      "VIGIA — Sistema de IA para Veeduría Ciudadana · datos SECOP · señales de alerta, no determinan culpabilidad",
+      m, pageH - 4
     );
-    doc.text(`Pág. ${p} / ${totalPages}`, pageW - margin, pageH - 5, { align: "right" });
+    doc.text(`Pag. ${p} / ${total}`, pageW - m, pageH - 4, { align: "right" });
   }
 
   doc.save(`VIGIA_DDQ_${contractId}_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -115,33 +224,24 @@ async function exportToPDF(reportRef, ddq, contractId) {
 // TODO: Fetch from FastAPI: GET /due-diligence/:nit
 export function DueDiligencePanel({ ddq, contractId }) {
   const [pdfPhase, setPdfPhase] = useState("idle"); // idle | compiling | capturing | generating | done
-  const reportRef = useRef(null);
 
   const handleExportPDF = async () => {
     if (pdfPhase !== "idle") return;
 
-    const steps = ["compiling", "capturing", "generating", "done"];
-    let i = 0;
-
-    const advance = () => {
-      setPdfPhase(steps[i]);
-      i++;
-    };
-
-    advance(); // → compiling
-    await new Promise((r) => setTimeout(r, 900));
-    advance(); // → capturing
-    await new Promise((r) => setTimeout(r, 800));
-    advance(); // → generating
+    setPdfPhase("compiling");
+    await new Promise((r) => setTimeout(r, 700));
+    setPdfPhase("capturing");
+    await new Promise((r) => setTimeout(r, 600));
+    setPdfPhase("generating");
 
     try {
-      await exportToPDF(reportRef.current, ddq, contractId);
+      exportToPDF(ddq, contractId); // síncrono — genera y descarga de inmediato
     } catch (e) {
       console.error("PDF export error:", e);
     }
 
-    advance(); // → done
-    await new Promise((r) => setTimeout(r, 2500));
+    setPdfPhase("done");
+    await new Promise((r) => setTimeout(r, 2000));
     setPdfPhase("idle");
   };
 
@@ -154,7 +254,7 @@ export function DueDiligencePanel({ ddq, contractId }) {
       {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* ── Left: DDQ structured report ── */}
-        <div className="lg:col-span-8" id="vigia-report-area" ref={reportRef}>
+        <div className="lg:col-span-8" id="vigia-report-area">
           <Card>
             <CardHeader>
               <FileSearch size={15} className="text-action-primary" />
