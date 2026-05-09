@@ -2,9 +2,10 @@
 // VIGÍA — Alertas Page (feed principal)
 // Movido desde Dashboard.jsx como sub-ruta
 // =============================================================================
-import { useState } from "react";
-import { Search, ChevronDown, AlertTriangle, TrendingUp, Building2, MapPin, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, ChevronDown, AlertTriangle, TrendingUp, Building2, MapPin, X, Zap } from "lucide-react";
 import MOCK_CONTRACT, { MOCK_ALERTS, BANDERAS_OCDS, PACO_NOTICIAS, DUE_DILIGENCE } from "../../data/mockContract";
+import { fetchAlerts } from "../../lib/api";
 import { TabNav } from "../../components/TabNav";
 import { RiskScorePanel } from "../../components/RiskScorePanel";
 import { MapView } from "../../components/MapView";
@@ -13,6 +14,7 @@ import { EvidenceCharts } from "../../components/EvidenceCharts";
 import { LLMActionPanel } from "../../components/LLMActionPanel";
 import { PACONewsWidget } from "../../components/PACONewsWidget";
 import { DueDiligencePanel } from "../../components/DueDiligencePanel";
+import { OSINTVerification } from "../../components/OSINTVerification";
 
 const TAB_ALERT_COUNTS = { resumen: 10, redes: 5, territorio: 3, denuncia: 5 };
 const PAGE_SIZE = 8;
@@ -152,6 +154,7 @@ function DetailPanel({ alert, onClose }) {
         )}
         {activeTab === "denuncia" && (
           <div className="space-y-4 animate-fade-in">
+            <OSINTVerification ddq={DUE_DILIGENCE} />
             <DueDiligencePanel ddq={DUE_DILIGENCE} contractId={alert.id} />
             <LLMActionPanel contract={contract} />
           </div>
@@ -224,15 +227,23 @@ function Pagination({ page, total, pageSize, onChange }) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function Alertas() {
-  const [query, setQuery] = useState("");
+  const [alerts, setAlerts]           = useState(MOCK_ALERTS);
+  const [query, setQuery]             = useState("");
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [filterNivel, setFilterNivel] = useState("TODOS");
   const [filterDepto, setFilterDepto] = useState("TODOS");
-  const [page, setPage] = useState(1);
+  const [page, setPage]               = useState(1);
+
+  // Cargar alertas reales de SECOP al montar
+  useEffect(() => {
+    fetchAlerts({ minValor: 200_000_000, limit: 50 })
+      .then((data) => { if (data?.length) setAlerts(data); })
+      .catch(() => {}); // silently keep mock on error
+  }, []);
 
   const handleSearch = (e) => { e.preventDefault(); setPage(1); };
 
-  const filtered = MOCK_ALERTS.filter((a) => {
+  const filtered = alerts.filter((a) => {
     const mN = filterNivel === "TODOS" || a.nivel === filterNivel;
     const mD = filterDepto === "TODOS" || a.departamento === filterDepto;
     const mQ = !query || [a.entidad, a.proveedor, a.id, a.departamento]
@@ -241,15 +252,62 @@ export default function Alertas() {
   });
 
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const totalValor = MOCK_ALERTS.reduce((s, a) => s + a.valor, 0);
-  const topEntidad = MOCK_ALERTS.reduce((top, a) => {
-    const cnt = MOCK_ALERTS.filter((x) => x.entidad === a.entidad).length;
+  const totalValor = alerts.reduce((s, a) => s + a.valor, 0);
+  const topEntidad = alerts.reduce((top, a) => {
+    const cnt = alerts.filter((x) => x.entidad === a.entidad).length;
     return cnt > (top.cnt ?? 0) ? { entidad: a.entidad, cnt } : top;
   }, {}).entidad ?? "—";
-  const deptos = ["TODOS", ...new Set(MOCK_ALERTS.map((a) => a.departamento))];
+  const deptos = ["TODOS", ...new Set(alerts.map((a) => a.departamento).filter(Boolean))];
+
+  // Contrato destacado para el hero (siempre el primero del mock con score 92)
+  const heroAlert = MOCK_ALERTS[0];
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+
+      {/* ── HERO BANNER: Score 92/100 — lo primero que ve el jurado ────── */}
+      {!selectedAlert && (
+        <div
+          className="mb-6 rounded-2xl border-2 border-red-200 bg-red-50 px-5 py-4 flex items-center gap-5 cursor-pointer hover:border-red-300 hover:shadow-card-md transition-all"
+          onClick={() => setSelectedAlert(heroAlert)}
+        >
+          {/* Gauge SVG mini */}
+          <div className="relative shrink-0 w-16 h-16">
+            <svg width="64" height="64" className="rotate-[-90deg]">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#fecaca" strokeWidth="8" />
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#dc2626" strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={`${2 * Math.PI * 26}`}
+                strokeDashoffset={`${2 * Math.PI * 26 * (1 - 0.92)}`}
+                style={{ filter: "drop-shadow(0 0 6px rgba(239,68,68,0.5))" }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="font-display font-bold text-xl leading-none text-risk-critical">92</span>
+              <span className="font-mono text-[8px] text-slate-400">/100</span>
+            </div>
+          </div>
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="text-[9px] font-mono font-bold bg-risk-critical text-white rounded-full px-2.5 py-0.5 animate-pulse-dot">
+                RIESGO CRÍTICO · PAE CAUCA · PDET
+              </span>
+              <span className="text-[9px] font-mono text-vigia-dim">Contrato destacado · Luis — Argelia, Cauca</span>
+            </div>
+            <p className="text-sm font-display font-semibold text-vigia-heading leading-snug truncate">
+              Alcaldía de Argelia → Soluciones Nutricionales del Pacífico SAS
+            </p>
+            <p className="text-[10px] font-mono text-vigia-muted mt-0.5">
+              $4.820M COP · Contratación Directa · 7 banderas · empresa constituida hace 15 días · domingo 23:14
+            </p>
+          </div>
+          <div className="shrink-0 hidden sm:flex items-center gap-1.5 text-[11px] font-mono text-risk-critical font-semibold">
+            <Zap size={12} /> ver análisis completo →
+          </div>
+        </div>
+      )}
+
       {/* Search + filters */}
       <div className="mb-5">
         <form onSubmit={handleSearch} className="mb-3">
